@@ -1,4 +1,4 @@
-# ForgeStory
+# Medium Clone from Scratch
 
 ForgeStory is a dynamic blogging platform designed to provide users with a seamless experience for creating, publishing, and sharing their content, stories, idea and much more.
 

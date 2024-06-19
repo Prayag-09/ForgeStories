@@ -1,8 +1,9 @@
+import Quote from "../components/Quote"
 
 const Signin = () => {
   return (
-    <div>
-      
+    <div className="">
+      <Quote />
     </div>
   )
 }

@@ -1,8 +1,10 @@
-# Medium Clone from Scratch
+# ForgeStory - A Blogging Platform
 
-[Medium Clone Repository](https://github.com/Prayag-09/Medium-Clone.git)
+[ForgeStory Repository](https://github.com/Prayag-09/Medium-Clone.git)
 
-Medium Clone is a dynamic blogging platform designed to provide users with a seamless experience for creating, publishing, and sharing their content, stories, ideas, and much more.
+ForgeStory is a dynamic blogging platform designed to provide users with a seamless experience for creating, publishing, and sharing their content, stories, ideas, and much more.
+ 
+Design inspired from Medium
 
 ## Tech Stack Used
 
@@ -12,16 +14,16 @@ Medium Clone is a dynamic blogging platform designed to provide users with a sea
 
 ## Getting Started
 
-To clone the repository and get started with Medium Clone, follow these steps:
+To clone the repository and get started with ForgeStory, follow these steps:
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/Prayag-09/Medium-Clone.git
+   git clone https://github.com/Prayag-09/ForgeStory.git
    ```
 
 2. **Navigate to the Project Directory**
    ```bash
-   cd Medium-Clone
+   cd ForgeStory
    ```
 
 3. **Install Dependencies**

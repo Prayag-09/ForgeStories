@@ -1,9 +1,7 @@
-const Blog = () => {
+export const Blog = () => {
   return (
     <div>
-      
+      This is a blog
     </div>
   )
 }
-
-export default Blog

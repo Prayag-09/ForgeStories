@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { BACKEND_URL } from "../config";
 
 type AuthProps = {
     type: "signup" | "signin";
@@ -16,7 +17,7 @@ export const Auth = ({ type }: AuthProps) => {
 
     async function sendRequest() {
         try {
-            const response = await axios.post(`${process.env.BACKEND_URL}/api/v1/user/${type}`, postInputs);
+            const response = await axios.post(`${BACKEND_URL}/api/v1/user/${type}`, postInputs);
             const { jwt } = response.data;
             localStorage.setItem("token", jwt);
             navigate("/blogs");
@@ -52,10 +53,13 @@ export const Auth = ({ type }: AuthProps) => {
                     </div>
 
                     <div className="space-y-4">
-                        {type === "signup" && <LabelledInput label="Name" placeholder="Name" name="name" onChange={handleInputChange} />}
-                        <LabelledInput label="Email" placeholder="Email" name="email" onChange={handleInputChange} />
-                        <LabelledInput label="Password" placeholder="Password" type="password" name="password" onChange={handleInputChange} />
+                        {type === "signup" && <LabelledInput label="Username" placeholder="John" name="name" onChange={handleInputChange} />}
+                        <LabelledInput label="Email" placeholder="name@gmail.com" name="email" onChange={handleInputChange} />
+
+                        <LabelledInput label="Password" placeholder="name@123" type="password" name="password" onChange={handleInputChange} />
+
                         <button onClick={sendRequest} type="button" className="mt-8 w-full text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
+
                             {type === "signup" ? "Sign up" : "Sign in"}
                         </button>
                     </div>

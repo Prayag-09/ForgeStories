@@ -2,8 +2,8 @@ import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { sign, verify } from 'hono/jwt';
-import { hashpass, comparepass } from "./hashPassword/hash";
-import { zodSignUp , zodSignIn } from "@prayagtushar/mediumclone";
+import { hashpass, comparepass } from "../hashing/PasswordHash";
+import { zodSignIn, zodSignUp } from "@prayagtushar/mediumclone";
 
 export const userRouter = new Hono<{
   Bindings: {
@@ -12,6 +12,7 @@ export const userRouter = new Hono<{
   }
 }>();
 
+// Sign UP
 userRouter.post('/signup', async(c) => {
     const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
@@ -51,6 +52,8 @@ userRouter.post('/signup', async(c) => {
     return c.status(403);
   }
 })
+
+// Sign IN
 userRouter.post('signin', async(c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,

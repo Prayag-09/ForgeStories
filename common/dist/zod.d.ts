@@ -1,55 +1,52 @@
 import z from 'zod';
 export declare const zodSignUp: z.ZodObject<{
-    Name: z.ZodString;
-    Email: z.ZodString;
-    Password: z.ZodString;
+    name: z.ZodOptional<z.ZodString>;
+    email: z.ZodString;
+    password: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    Name: string;
-    Email: string;
-    Password: string;
+    email: string;
+    password: string;
+    name?: string | undefined;
 }, {
-    Name: string;
-    Email: string;
-    Password: string;
+    email: string;
+    password: string;
+    name?: string | undefined;
 }>;
 export declare const zodSignIn: z.ZodObject<{
-    Email: z.ZodString;
-    Password: z.ZodString;
+    email: z.ZodString;
+    password: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    Email: string;
-    Password: string;
+    email: string;
+    password: string;
 }, {
-    Email: string;
-    Password: string;
+    email: string;
+    password: string;
 }>;
 export declare const zodBlog: z.ZodObject<{
-    Title: z.ZodString;
-    Content: z.ZodString;
-    Description: z.ZodString;
+    title: z.ZodString;
+    content: z.ZodString;
+    description: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    Title: string;
-    Content: string;
-    Description: string;
+    title: string;
+    content: string;
+    description?: string | undefined;
 }, {
-    Title: string;
-    Content: string;
-    Description: string;
+    title: string;
+    content: string;
+    description?: string | undefined;
 }>;
 export declare const zodPutBlog: z.ZodObject<{
-    id: z.ZodNumber;
-    Title: z.ZodString;
-    Content: z.ZodString;
-    Description: z.ZodString;
+    title: z.ZodOptional<z.ZodString>;
+    content: z.ZodOptional<z.ZodString>;
+    id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    Title: string;
-    Content: string;
-    Description: string;
-    id: number;
+    id: string;
+    title?: string | undefined;
+    content?: string | undefined;
 }, {
-    Title: string;
-    Content: string;
-    Description: string;
-    id: number;
+    id: string;
+    title?: string | undefined;
+    content?: string | undefined;
 }>;
 export type zodSignUp = z.infer<typeof zodSignUp>;
 export type zodSignIn = z.infer<typeof zodSignIn>;

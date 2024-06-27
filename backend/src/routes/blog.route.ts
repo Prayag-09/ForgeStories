@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { decode, sign, verify } from 'hono/jwt';
-import { hashpass, comparepass } from "./hashPassword/hash";
+import { hashpass, comparepass } from "../hashing/PasswordHash";
 import { zodBlog, zodPutBlog } from "@prayagtushar/mediumclone";
 
 export const blogRouter = new Hono<{
@@ -24,14 +24,15 @@ blogRouter.use('/*', async (c, next) => {
       await next();
     }
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     c.status(403);
     return c.json({ message: 'UnAuthorized' });
   }
 });
 
-blogRouter.get('/bulk', async (c) => {
 
+// Get all blogs
+blogRouter.get('/bulk', async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -51,6 +52,8 @@ blogRouter.get('/bulk', async (c) => {
   }
 });
 
+
+// Create a blog
 blogRouter.post('/', async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,

@@ -1,27 +1,26 @@
 import z from 'zod';
 
 export const zodSignUp = z.object({
-    Name : z.string(),
-    Email : z.string().email(),
-    Password : z.string().min(7)
+    name: z.string().optional(),
+    email: z.string().email(),
+    password: z.string().min(5),
 })
 
 export const zodSignIn = z.object({
-    Email : z.string().email(),
-    Password : z.string().min(7)
+    email: z.string().email(),
+    password: z.string().min(5),
 })
 
 export const zodBlog = z.object({
-    Title :  z.string(),
-    Content : z.string(),
-    Description : z.string(),
+    title: z.string(),
+    content: z.string(),
+    description : z.string().optional()
 })
 
 export const zodPutBlog = z.object({
-    id : z.number(),
-    Title :  z.string(),
-    Content : z.string(),
-    Description : z.string(),
+    title: z.string().optional(),
+    content: z.string().optional(),
+    id: z.string(),
 })
 
 // For frontend needs

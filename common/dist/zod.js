@@ -6,22 +6,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.zodPutBlog = exports.zodBlog = exports.zodSignIn = exports.zodSignUp = void 0;
 const zod_1 = __importDefault(require("zod"));
 exports.zodSignUp = zod_1.default.object({
-    Name: zod_1.default.string(),
-    Email: zod_1.default.string().email(),
-    Password: zod_1.default.string().min(7)
+    name: zod_1.default.string().optional(),
+    email: zod_1.default.string().email(),
+    password: zod_1.default.string().min(5),
 });
 exports.zodSignIn = zod_1.default.object({
-    Email: zod_1.default.string().email(),
-    Password: zod_1.default.string().min(7)
+    email: zod_1.default.string().email(),
+    password: zod_1.default.string().min(5),
 });
 exports.zodBlog = zod_1.default.object({
-    Title: zod_1.default.string(),
-    Content: zod_1.default.string(),
-    Description: zod_1.default.string(),
+    title: zod_1.default.string(),
+    content: zod_1.default.string(),
+    description: zod_1.default.string().optional()
 });
 exports.zodPutBlog = zod_1.default.object({
-    id: zod_1.default.number(),
-    Title: zod_1.default.string(),
-    Content: zod_1.default.string(),
-    Description: zod_1.default.string(),
+    title: zod_1.default.string().optional(),
+    content: zod_1.default.string().optional(),
+    id: zod_1.default.string(),
 });

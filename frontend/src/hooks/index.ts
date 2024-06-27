@@ -7,6 +7,9 @@ export interface Blog {
     "content": string;
     "title": string;
     "id": number
+    // "author": {
+    //     "name": string
+    // }
     "autherName": string
 }
 

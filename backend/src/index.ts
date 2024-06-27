@@ -1,15 +1,19 @@
-import { Hono } from "hono";
-import userRoutes from "./routes/userRoutes";
-import blogRoutes from "./routes/blogRoutes";
-import {cors} from 'hono/cors'
-export const app = new Hono<{
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { blogRouter } from './routes/blogRoutes';
+import { userRouter } from './routes/userRoutes';
+
+
+const app = new Hono<{
     Bindings: {
-        DATABASE_URL: string;
-        JWT: string;
+        DATABASE_URL: string,
+        JWT_SECRET: string
     }
-}>();
-app.use('*' , cors());
-app.route('/api/v1/user', userRoutes);
-app.route('/api/v1/blog', blogRoutes);
+}>()
+
+app.use("/*", cors())
+app.route("/api/v1/user", userRouter)
+app.route("/api/v1/blog", blogRouter)
+
 
 export default app;

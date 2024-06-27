@@ -1,81 +1,139 @@
+import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { Hono } from "hono";
-import { sign } from "hono/jwt";
-import { zodSignIn } from "@prayagtushar/mediumclone";
-import { zodSignUp } from "@prayagtushar/mediumclone";
+import { sign, verify } from 'hono/jwt';
+import { hashpass, comparepass } from "./hashPassword/hash";
+import { zodSignUp , zodSignIn } from "@prayagtushar/mediumclone";
 
-  type Bindings = {
-    DATABASE_URL : string
-    JWT: string;
-  };
-
-export const user = new Hono<{
-    Bindings : Bindings
+export const userRouter = new Hono<{
+  Bindings: {
+    DATABASE_URL: string,
+    JWT_SECRET: string
+  }
 }>();
 
-user.post('/signup', async (c) => {
-  
-  const prisma = new PrismaClient({
-    datasourceUrl : c.env?.DATABASE_URL
-  }).$extends(withAccelerate())
+userRouter.post('/signup', async(c) => {
+    const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
 
-  const body = await c.req.json();
-  const {success} = zodSignUp.safeParse(body);
-  if(!success)
-      return c.json({error : "Invalid Input"})
-    try {
+  const body = await c.req.json()
+  const { success } = zodSignUp.safeParse(body);
+  if(!success) {
+    c.status(411);
+    return c.json({ message: 'Invalid input' })
+  }
 
-        const newUser = await prisma.user.create({
-          data: {
-            Name: body.Name,
-            Password: body.Password,
-            Email: body.Email
-          }
-        });
-    
-        const token = await sign({ id: newUser.id }, c.env.JWT);
-    
-        return c.json({ token });
-      } catch (err) {
-        console.error("Not able to Signup !!", err);
-        c.status(500);
-        return c.json({ error: "Internal Server Error" });
-      }
+  try {
+    const finduser = await prisma.user.findFirst({
+      where: {
+        email: body.email
+      },
     });
-
-user.post('/signin',async (c) => {
-    
-  const prisma = new PrismaClient({
-    datasourceUrl : c.env?.DATABASE_URL
-  }).$extends(withAccelerate())
-  
-  const body = await c.req.json();
-  const {success} = zodSignIn.safeParse(body);
-  if(!success)
-      return c.json({error : "Invalid Input"})
-    try {
-        const user = await prisma.user.findUnique({
-            where : {
-                Email: body.Email,
-                Password: body.Password
-            }
-        })
-        
-        if(!user){
-            c.status(403);
-            return c.json({ Error : " User not found"})
-        }
-
-        const jwt = await sign({
-            id : user.id,
-        } , c.env?.JWT)
-        return c.json({jwt})
-
-    } catch(err) {
-        console.error("Error while signing in");
-        throw err;
+    if(finduser) {
+      c.status(411);
+      return c.json({ message: 'User already exists' })
     }
-})
 
-export default user;
+    const userPassword = await hashpass(body.password)
+    const user = await prisma.user.create({
+      data: {
+        email: body.email,
+        name: body.name,
+        password: userPassword
+      }
+    })
+  
+    const token = await sign({ id: user.id }, c.env.JWT_SECRET)
+    return c.json({ jwt: token })
+
+  } catch (error) {
+    return c.status(403);
+  }
+})
+userRouter.post('signin', async(c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const body = await c.req.json()
+  const { success } = zodSignIn.safeParse(body);
+  if (!success) {
+    c.status(411)
+    return c.json({ message: 'Invalid input' })
+  }
+
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        email: body.email
+      }
+    })
+
+    if (!user) {
+      c.status(411)
+      return c.json({ message: 'User does not exist' })
+    }
+    
+    const checkUser = await comparepass(body.password, user.password);
+    if(!checkUser){
+      c.status(403)
+      return c.json({ message: 'Invalid password' })
+    }
+
+    const { password, ...rest } = user;
+    const token = await sign({ id: user.id }, c.env.JWT_SECRET)
+    return c.json({ jwt: token, user: rest })
+    
+  } catch (error) {
+    return c.status(403);
+  }
+});
+
+// Get User
+userRouter.get('/getuser/:id', async(c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const authorid = c.req.param("id");
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: authorid,
+      },
+    });
+    if (!user) {
+      c.status(411);
+      return c.json({
+        message: "User does not exist anymore",
+      });
+    }
+    c.status(200);
+    return c.json({
+      name: user.name,
+    });
+  } catch (error) {
+    c.status(500);
+    return c.json("Internal server error");
+  }
+});
+
+// Check User
+userRouter.get('/check', async(c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    const token = c.req.header('Authorization') || '';
+    const response = await verify(token, c.env.JWT_SECRET)
+    if (response) {
+      c.status(200)
+      return c.json({ response })
+    }
+  } catch (error) {
+    c.status(403)
+    return c.json({ message: 'UnAuthorized' })
+  }
+});

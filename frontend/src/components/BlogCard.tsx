@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
 
-
 interface BlogCardProps {
     authorName: string;
     title: string;
     content: string;
-    publishedDate: string;
+    publishedDate?: string;
     id: number;
 }
 
@@ -13,42 +12,62 @@ export const BlogCard = ({
     id,
     authorName,
     title,
-    content,
-    publishedDate
+    content
 }: BlogCardProps) => {
-    return <Link to={`/blog/${id}`}>
-        <div className="p-4 border-b border-slate-200 pb-4 w-screen max-w-screen-md cursor-pointer">
-            <div className="flex">
-                <Avatar name={authorName} />
-                <div className="font-extralight pl-2 text-sm flex justify-center flex-col">{authorName}</div>
-                <div className="flex justify-center flex-col pl-2">
+    const publishedDate = new Date().toLocaleDateString();
+    return (
+        <Link to={`/blog/${id}`} className="text-black">
+            <div className="p-4 border-b border-gray-300 pb-4 max-w-screen-md cursor-pointer">
+                <div className="flex items-center mb-2">
+                    <Avatar name={authorName} />
+                    <div className="font-bold text-sm ml-2">{authorName}</div>
                     <Circle />
+                    <div className="font-medium text-sm ml-2 text-gray-500">
+                        {publishedDate}
+                    </div>
                 </div>
-                <div className="pl-2 font-thin text-slate-500 text-sm flex justify-center flex-col">
-                    {publishedDate}
+                <div className="text-xl font-bold mb-2">
+                    {title}
+                </div>
+                <div className="text-md mb-2">
+                    {content.slice(0, 100) + "..."}
+                </div>
+                <div className="text-gray-500 text-sm">
+                    {`${Math.ceil(content.length / 100)} minute(s) read`}
                 </div>
             </div>
-            <div className="text-xl font-semibold pt-2">
-                {title}
-            </div>
-            <div className="text-md font-thin">
-                {content.slice(0, 100) + "..."}
-            </div>
-            <div className="text-slate-500 text-sm font-thin pt-4">
-                {`${Math.ceil(content.length / 100)} minute(s) read`}
-            </div>
-        </div>
-    </Link>
+        </Link>
+    );
 }
 
 export function Circle() {
-    return <div className="h-1 w-1 rounded-full bg-slate-500"> </div>
+    return <div className="h-1 w-1 rounded-full bg-gray-500 ml-2"></div>;
 }
 
-export function Avatar({ name, size = "small" }: { name: string, size?: "small" | "big" }) {
-    return <div className={`relative inline-flex items-center justify-center overflow-hidden bg-gray-600 rounded-full ${size === "small" ? "w-6 h-6" : "w-10 h-10"}`}>
-    <span className={`${size === "small" ? "text-xs" : "text-md"} font-extralight text-gray-600 dark:text-gray-300`}>
-        {name[0]}
-    </span>
-</div>
+interface AvatarProps {
+    name: string;
+    size?: "small" | "big";
+    photo?: string;
 }
+
+export function Avatar({ name, size = "small", photo }: AvatarProps) {
+    const initials = name.split(" ").map((part) => part[0]).join("");
+    const avatarSize = size === "small" ? "w-6 h-6" : "w-10 h-10";
+
+    return (
+        <div className={`relative inline-flex items-center justify-center overflow-hidden bg-gray-600 rounded-full ${avatarSize}`}>
+            {photo ? (
+                <img
+                    src={photo}
+                    alt={`Avatar of ${name}`}
+                    className="absolute inset-0 object-cover w-full h-full rounded-full"
+                />
+            ) : (
+                <span className={`${size === "small" ? "text-xs" : "text-md"} font-extralight text-gray-600 dark:text-gray-300`}>
+                    {initials}
+                </span>
+            )}
+        </div>
+    );
+}
+

@@ -3,6 +3,13 @@ import { Appbar } from "./Appbar"
 import { Avatar } from "./BlogCard"
 
 export const FullBlog = ({ blog }: {blog: Blog}) => {
+    const formatDate = (date: Date): string => {
+        const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString(undefined, options);
+    }
+
+    const currentDate = formatDate(new Date());
+
     return <div>
         <Appbar />
         <div className="flex justify-center">
@@ -12,7 +19,7 @@ export const FullBlog = ({ blog }: {blog: Blog}) => {
                         {blog.title}
                     </div>
                     <div className="text-slate-500 pt-2">
-                        Post on 28 June 2024
+                        Post on {currentDate}
                     </div>
                     <div className="pt-4">
                         {blog.content}

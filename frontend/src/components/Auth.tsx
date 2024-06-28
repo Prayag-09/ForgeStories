@@ -1,27 +1,31 @@
-import { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { Email, Password } from './Prefill';
 import axios from "axios";
 import { BACKEND_URL } from "../config";
-import { zodSignUp } from "@prayagtushar/mediumclone";
 
-export const Auth = ({ type }: { type: "signup" | "signin" }) => {
+interface AuthInputs {
+    name?: string;
+    email: string;
+    password: string;
+}
+
+export const Auth: React.FC<{ type: "signup" | "signin" }> = ({ type }) => {
     const navigate = useNavigate();
-    const [postInputs, setPostInputs] = useState<zodSignUp>({
+    const [postInputs, setPostInputs] = useState<AuthInputs>({
         name: "",
-        email: "",
-        password: ""
+        email: type === "signin" ? Email : "",
+        password: type === "signin" ? Password : ""
     });
 
     async function sendRequest() {
         try {
-            const response = await axios.post(`${BACKEND_URL}/api/v1/user/${type === "signup" ? "signup" : "signin"}`, postInputs);
+            const response = await axios.post(`${BACKEND_URL}/api/v1/user/${type}`, postInputs);
             const { jwt } = response.data;
             localStorage.setItem("token", jwt);
             navigate("/blogs");
         } catch(e) {
-            alert("Error while signing up")
-            // alert the user here that the request failed
+            alert(`Error while ${type === "signin" ? "signing in" : "signing up"}`)
         }
     }
     
@@ -38,27 +42,43 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
                     </Link>
                 </div>
                 {type === "signup" &&
-                    <LabelledInput label="Name" placeholder="Name" onChange={(e) => {
+                    <LabelledInput 
+                        label="Name" 
+                        placeholder="Name" 
+                        value={postInputs.name || ""}
+                        onChange={(e) => {
+                            setPostInputs({
+                                ...postInputs,
+                                name: e.target.value
+                            })
+                        }} 
+                    />
+                }
+                <LabelledInput 
+                    label="Email" 
+                    placeholder="Email" 
+                    value={postInputs.email}
+                    onChange={(e) => {
                         setPostInputs({
                             ...postInputs,
-                            name: e.target.value
+                            email: e.target.value
                         })
-                    }} />
-                }
-                <LabelledInput label="Email" placeholder="Email" onChange={(e) => {
-                    setPostInputs({
-                        ...postInputs,
-                        email: e.target.value
-                    })
-                }} />
-                <LabelledInput label="Password" type="password" placeholder="Password" onChange={(e) => {
-                    setPostInputs({
-                        ...postInputs,
-                        password: e.target.value
-                    })
-                }} />
+                    }} 
+                />
+                <LabelledInput 
+                    label="Password" 
+                    type="password" 
+                    placeholder="Password" 
+                    value={postInputs.password}
+                    onChange={(e) => {
+                        setPostInputs({
+                            ...postInputs,
+                            password: e.target.value
+                        })
+                    }} 
+                />
                 <button onClick={sendRequest} type="button" className="mt-6 w-full bg-black text-white rounded-lg py-3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 hover:bg-gray-900 transition-colors duration-300">
-                    {type === "signup" ? "Sign Up" : "Sign In"}
+                    {type === "signin" ? "Sign In" : "Sign Up"}
                 </button>
             </div>
         </div>
@@ -70,9 +90,10 @@ interface LabelledInputType {
     placeholder: string;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
     type?: string;
+    value: string;
 }
 
-function LabelledInput({ label, placeholder, onChange, type }: LabelledInputType) {
+const LabelledInput: React.FC<LabelledInputType> = ({ label, placeholder, onChange, type, value }) => {
     return (
         <div className="mb-4">
             <label className="block mb-1 text-sm font-semibold">{label}</label>
@@ -82,6 +103,7 @@ function LabelledInput({ label, placeholder, onChange, type }: LabelledInputType
                 className="w-full p-3 bg-white border border-gray-300 text-gray-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
                 placeholder={placeholder}
                 required
+                value={value}
             />
         </div>
     );
